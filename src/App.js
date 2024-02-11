@@ -12,6 +12,9 @@ function App() {
   const [editingId, setEditingId] = useState(null);
 
 
+  const [notification, setNotification] = useState('');
+
+
   useEffect(() => {
     fetchData();
   }, [])
@@ -29,11 +32,18 @@ function App() {
         header: {'Content-Type': 'application/json'},
         body: JSON.stringify(formData)
       }).then(()=> {
-        
+
+        setNotification('A new record has been added.');
+      
         setIsEditing(false);
         setEditingId(null);
         setFormData({firstname: '', lastname: '', city: ''});
         fetchData();
+
+        setTimeout(() => {
+          setNotification('');
+        }, 5000)
+
       })
 
     } else {
@@ -43,8 +53,17 @@ function App() {
           method: 'POST',
           header: {'Content-Type': 'application/json'},
           body: JSON.stringify(formData)
+        }).then(() => {
+          //Display notification message
+          setNotification('A new record has been added.');
+          fetchData();
+          setFormData({firstname: '', lastname: '', city: ''});
+
+          setTimeout(() => {
+            setNotification('');
+          }, 5000)
         })
-        fetchData();
+        
       }
     }
 
@@ -69,6 +88,12 @@ function App() {
 
   const handleEdit = (record) => {
     //...
+    setNotification('You are about to Edit an information')
+
+    setTimeout(() => {
+      setNotification('');
+    }, 5000)
+
     setFormData({firstname: record.firstname, lastname: record.lastname, city: record.city});
     setIsEditing(true)
     setEditingId(record.id)
@@ -77,9 +102,20 @@ function App() {
 
   const handleDelete = (id) => {
     //...
+    
     fetch(`https://db-infocapture-default-rtdb.asia-southeast1.firebasedatabase.app/user/${id}.json`, {
       method: 'DELETE',
+    }).then(() => {
+      setNotification('You have deleted a record')
+      setTimeout(() => {
+        setNotification('');
+      }, 5000)
     })
+
+    //Update the table list
+    setRecords(records.filter(record => record.id !== id));
+
+
   }
 
   const handleInputChange = (e) => {
@@ -142,7 +178,7 @@ function App() {
 
         <div className="table-container">
           <h2>DigiPunk World Citizens</h2>
-          <h4 className='notification'>A new record has been added</h4>
+          <h4 className='notification'>{notification}</h4>
           <table>
             <thead> 
                 <tr>
