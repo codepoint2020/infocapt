@@ -153,6 +153,12 @@ body, .App {
 }
 
 
+.notification {
+  color: #f96363;
+  font-size: 0.85rem;
+}
+
+
 
 
 /* Responsive Design */
